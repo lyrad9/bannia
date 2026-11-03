@@ -1,0 +1,10 @@
+# Tes références d'inspiration restent sur ton ordinateur : elles appartiennent à leurs auteurs.
+skills/linkedin-banner/references/images/**
+!skills/linkedin-banner/references/images/*/
+!skills/linkedin-banner/references/images/*/.gitkeep
+
+# Fichiers que l'éditeur crée en travaillant
+.corbeille/
+node_modules/
+.DS_Store
+Thumbs.db

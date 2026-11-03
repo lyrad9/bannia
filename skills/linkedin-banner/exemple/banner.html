@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="banner-size" content="1584x396">
+<meta name="banner-format" content="linkedin">
+<meta name="banner-lang" content="fr">
+<title>Bannière LinkedIn · exemple</title>
+<!--
+  Exemple neutre : la structure qu'attend l'éditeur.
+  - data-el="Nom lisible" sur chaque élément modifiable ;
+  - data-repeat sur ce qu'on peut dupliquer (ici, les services) ;
+  - data-decor sur les motifs décoratifs, qui peuvent rester dans la zone mobile ;
+  - les couleurs dans :root, avec --primary, --light, --deep et --text.
+  Le texte est volontairement générique : remplace-le par le tien.
+-->
+<style>
+@font-face { font-family: "Inter"; src: url("inter.woff2") format("woff2"); font-weight: 100 900; }
+:root { --primary: #2f6fdb; --light: #7fb0ff; --deep: #0b1f44; --text: #ffffff; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 1584px; height: 396px; overflow: hidden; background: var(--deep); }
+body { position: relative; font-family: "Inter", "Segoe UI", sans-serif; color: var(--text); }
+
+.bg { position: absolute; inset: 0; background:
+  radial-gradient(ellipse 640px 260px at 1030px 140px, rgba(127,176,255,.55) 0%, rgba(127,176,255,0) 100%),
+  linear-gradient(100deg, #081833 0%, #0f2a5c 45%, var(--primary) 100%); }
+.grid { position: absolute; inset: 0; width: 1584px; height: 396px; }
+.grain { position: absolute; inset: 0; width: 100%; height: 100%; opacity: .12; mix-blend-mode: overlay; }
+
+.block { position: absolute; left: 480px; right: 40px; top: 0; bottom: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+.services { display: flex; gap: 10px; margin-bottom: 22px; }
+.pill { height: 40px; padding: 0 18px; display: inline-flex; align-items: center; border-radius: 20px; background: rgba(255,255,255,.12); box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.35); font-size: 20px; font-weight: 500; white-space: nowrap; }
+h1 { font-size: 66px; line-height: 1.12; font-weight: 800; letter-spacing: -.04em; white-space: nowrap; }
+h1 em { font-style: normal; color: var(--light); }
+.cta { display: inline-flex; align-items: center; gap: 12px; height: 58px; margin-top: 24px; padding: 0 28px; border-radius: 29px; background: #fff; color: var(--deep); font-size: 24px; font-weight: 700; letter-spacing: -.015em; white-space: nowrap; }
+.cta svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.8; stroke-linecap: round; stroke-linejoin: round; }
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<svg class="grid" data-el="Grille" data-decor viewBox="0 0 1584 396" aria-hidden="true">
+  <g stroke="#fff" fill="none" stroke-opacity=".07">
+    <path d="M0 99H1584M0 198H1584M0 297H1584"/>
+    <path d="M396 0V396M792 0V396M1188 0V396"/>
+  </g>
+</svg>
+<svg class="grain" aria-hidden="true"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter><rect width="100%" height="100%" filter="url(#n)"/></svg>
+
+<div class="block">
+  <div class="services">
+    <span class="pill" data-el="Service" data-repeat>Premier service</span>
+    <span class="pill" data-el="Service" data-repeat>Deuxième service</span>
+    <span class="pill" data-el="Service" data-repeat>Troisième service</span>
+  </div>
+  <h1 data-el="Tagline">Ton message principal,<br><em>en une phrase claire</em></h1>
+  <div class="cta" data-el="Call to action">Ton appel à l'action <svg viewBox="0 0 24 24"><path d="M4 12h16M13 5l7 7-7 7"/></svg></div>
+</div>
+</body>
+</html>
