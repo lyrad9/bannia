@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 937.8 186" width="937.8" height="186">
+<title>Bannia</title>
+<defs><linearGradient id="bannia-grad" gradientUnits="userSpaceOnUse" x1="40" y1="28" x2="216" y2="228"><stop offset="0" stop-color="#7CC6FF"/><stop offset="0.38" stop-color="#2A8BF2"/><stop offset="0.72" stop-color="#0B5CC4"/><stop offset="1" stop-color="#083A7A"/></linearGradient></defs>
+<g transform="translate(0 -27.0)"><g><path transform="translate(-37.2 0.9599999999999973) scale(0.93)" d="M40 28 H150.0 A46.0 46.0 0 0 1 150.0 120 H40 Z M40 136 H170.0 A46.0 46.0 0 0 1 170.0 228 H40 Z" fill="url(#bannia-grad)"/></g>
+<g fill="#0D1B2E" transform="translate(241.80 0)"><rect x="0.0" y="27.0" width="26" height="186" rx="13.0"/>
+<path fill-rule="evenodd" d="M63.0 87.0 A63.0 63.0 0 1 0 63.0 213.0 A63.0 63.0 0 1 0 63.0 87.0 Z M63.0 113.0 A37.0 37.0 0 1 1 63.0 187.0 A37.0 37.0 0 1 1 63.0 113.0 Z"/>
+<path fill-rule="evenodd" d="M197.0 87.0 A63.0 63.0 0 1 0 197.0 213.0 A63.0 63.0 0 1 0 197.0 87.0 Z M197.0 113.0 A37.0 37.0 0 1 1 197.0 187.0 A37.0 37.0 0 1 1 197.0 113.0 Z"/>
+<rect x="234.0" y="87.0" width="26" height="126" rx="13.0"/>
+<rect x="268.0" y="87.0" width="26" height="126" rx="13.0"/>
+<path d="M268.0 150 A63.0 63.0 0 0 1 394.0 150 H368.0 A37.0 37.0 0 0 0 294.0 150 Z"/>
+<rect x="368.0" y="137.0" width="26" height="76" rx="13.0"/>
+<rect x="402.0" y="87.0" width="26" height="126" rx="13.0"/>
+<path d="M402.0 150 A63.0 63.0 0 0 1 528.0 150 H502.0 A37.0 37.0 0 0 0 428.0 150 Z"/>
+<rect x="502.0" y="137.0" width="26" height="76" rx="13.0"/>
+<rect x="536.0" y="87.0" width="26" height="126" rx="13.0"/>
+<circle cx="549.0" cy="54" r="15"/>
+<path fill-rule="evenodd" d="M633.0 87.0 A63.0 63.0 0 1 0 633.0 213.0 A63.0 63.0 0 1 0 633.0 87.0 Z M633.0 113.0 A37.0 37.0 0 1 1 633.0 187.0 A37.0 37.0 0 1 1 633.0 113.0 Z"/>
+<rect x="670.0" y="87.0" width="26" height="126" rx="13.0"/></g></g>
+</svg>

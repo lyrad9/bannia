@@ -1,4 +1,11 @@
-# Crée ta bannière LinkedIn avec l'IA
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset=".github/bannia-horizontal-ondark.svg">
+    <img src=".github/bannia-horizontal.svg" alt="Bannia" width="320">
+  </picture>
+</p>
+
+# Bannia : crée ta bannière LinkedIn avec l'IA
 
 Trois skills pour [Claude Code](https://claude.com/claude-code) et un mini-éditeur local. Avec eux, tu crées ta bannière LinkedIn, ses déclinaisons pour X, Facebook et WhatsApp, et les visuels de ta section Sélection. Gratuit.
 
@@ -22,14 +29,14 @@ L'éditeur, dans `skills/linkedin-banner/editor/`, compare les directions et fil
 1. Clone le dépôt :
 
    ```bash
-   git clone https://github.com/lyrad9/banniere-linkedin-ia.git
+   git clone https://github.com/lyrad9/bannia.git
    ```
 
 2. Copie les trois dossiers de `skills/` dans le dossier `.claude/skills/` du projet où tu travailles avec Claude Code. Crée-le s'il n'existe pas :
 
    ```bash
    mkdir -p mon-projet/.claude/skills
-   cp -r banniere-linkedin-ia/skills/* mon-projet/.claude/skills/
+   cp -r bannia/skills/* mon-projet/.claude/skills/
    ```
 
    Pour les avoir dans tous tes projets, copie-les plutôt dans `~/.claude/skills/`.
@@ -82,4 +89,4 @@ Code et skills sous licence MIT (voir [LICENSE](LICENSE)). La police Inter, incl
 
 Claude est une marque d'Anthropic. Ce pack est indépendant, sans lien avec Anthropic. LinkedIn, X, Facebook et WhatsApp sont des marques de leurs propriétaires.
 
-Par [Daryl Ngako](https://lyrad.dev).
+Site du pack : [bannia.lyrad.dev](https://bannia.lyrad.dev). Par [Daryl Ngako](https://lyrad.dev).
