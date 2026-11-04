@@ -3,13 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Banner Studio</title>
+<title>Bannia Editor</title>
 <style>
 @font-face { font-family: "Inter"; src: url("/editor/inter.woff2") format("woff2"); font-weight: 100 900; }
 :root {
-  --bg: #0e0e0f; --canvas: #131314; --panel: #18181a; --raised: #212124; --hover: #2a2a2e;
-  --line: #2c2c30; --line2: #3b3b41; --ink: #f4f3f1; --soft: #b4b2ae; --muted: #7f7d79;
-  --accent: #e78a53; --accent-soft: rgba(231,138,83,.15); --select: #4c9dff; --warn: #f2c14e; --danger: #f0705f;
+  --bg: #06111f; --canvas: #091626; --panel: #0d1c30; --raised: #13253d; --hover: #1a304d;
+  --line: #1c3150; --line2: #284466; --ink: #f2f6fb; --soft: #a9b9cd; --muted: #7187a4;
+  --accent: #4fa6ff; --accent-soft: rgba(79,166,255,.16); --accent-grad: linear-gradient(135deg, #7cc6ff 0%, #2a8bf2 45%, #0b5cc4 100%);
+  --select: #7cc6ff; --warn: #f2c14e; --danger: #f0705f;
   --r: 8px;
 }
 * { box-sizing: border-box; }
@@ -25,7 +26,9 @@ svg.i { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-widt
 /* Barre du haut */
 #top { grid-area: top; display: flex; align-items: center; gap: 6px; padding: 0 12px 0 16px; background: var(--panel); border-bottom: 1px solid var(--line); min-width: 0; }
 .brand { display: flex; align-items: center; gap: 9px; font-size: 14px; font-weight: 650; letter-spacing: -.015em; white-space: nowrap; }
-.brand i { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 7px; background: var(--accent); color: #1b0f08; font-style: normal; font-size: 13px; font-weight: 800; letter-spacing: -.04em; }
+.brand svg { display: block; width: 22px; height: 22px; }
+.brand b { font-weight: 650; }
+.brand span { color: var(--soft); font-weight: 500; }
 #bannerName { margin-left: 10px; padding-left: 14px; border-left: 1px solid var(--line2); color: var(--soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
 .spacer { flex: 1; min-width: 6px; }
 .icon { display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: var(--r); color: var(--soft); transition: background .12s, color .12s; }
@@ -34,7 +37,7 @@ svg.i { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-widt
 .pill:hover:not(:disabled) { background: var(--hover); color: var(--ink); }
 .pill.on { background: var(--accent-soft); color: var(--accent); }
 .pill:disabled { opacity: .35; cursor: default; }
-.primary { display: inline-flex; align-items: center; gap: 8px; height: 34px; padding: 0 15px; margin-left: 6px; border-radius: var(--r); background: var(--accent); color: #1b0f08; font-weight: 650; white-space: nowrap; transition: filter .12s; }
+.primary { display: inline-flex; align-items: center; gap: 8px; height: 34px; padding: 0 15px; margin-left: 6px; border-radius: var(--r); background: var(--accent-grad); color: #fff; font-weight: 650; white-space: nowrap; transition: filter .12s; }
 .primary:hover:not(:disabled) { filter: brightness(1.08); }
 #status { color: var(--muted); font-size: 12px; white-space: nowrap; margin-right: 6px; }
 .sep { width: 1px; height: 22px; margin: 0 6px; background: var(--line2); flex: none; }
@@ -43,7 +46,7 @@ svg.i { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-widt
 #rail { grid-area: rail; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 10px 0; background: var(--panel); border-right: 1px solid var(--line); overflow-y: auto; scrollbar-width: none; }
 .tool { position: relative; display: grid; place-items: center; width: 42px; height: 40px; flex: none; border-radius: 10px; color: var(--soft); transition: background .12s, color .12s; }
 .tool:hover { background: var(--hover); color: var(--ink); }
-.tool.on { background: var(--accent); color: #1b0f08; }
+.tool.on { background: var(--accent-grad); color: #fff; }
 .rail-sep { width: 26px; height: 1px; margin: 6px 0; background: var(--line2); flex: none; }
 [data-tip] { position: relative; }
 #tip { position: fixed; z-index: 50; padding: 5px 9px; border-radius: 6px; background: #000; color: #fff; font-size: 12px; white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity .1s; }
@@ -160,7 +163,7 @@ textarea.txt:focus { border-color: var(--accent); }
 <body>
 <div id="app">
   <header id="top">
-    <div class="brand"><i>BS</i>Banner Studio</div>
+    <div class="brand"><svg viewBox="40 28 176 200" aria-hidden="true"><defs><linearGradient id="bannia-grad" gradientUnits="userSpaceOnUse" x1="40" y1="28" x2="216" y2="228"><stop offset="0" stop-color="#A8DAFF"/><stop offset=".4" stop-color="#4FA6FF"/><stop offset=".75" stop-color="#1F78EE"/><stop offset="1" stop-color="#1258C2"/></linearGradient></defs><path fill="url(#bannia-grad)" d="M40 28H154A46 46 0 0 1 154 120H40Z M40 136H174A46 46 0 0 1 174 228H40Z"/></svg><b>Bannia</b><span>Editor</span></div>
     <div id="bannerName"></div>
     <div class="sep"></div>
     <button class="icon" id="undo" data-tip="Annuler" data-key="Ctrl+Z" aria-label="Annuler" disabled></button>
@@ -190,10 +193,10 @@ textarea.txt:focus { border-color: var(--accent); }
               <circle id="photoRing" fill="#fff"/>
               <image id="photoImg" preserveAspectRatio="xMidYMid slice" clip-path="url(#photoClip)"/>
             </g>
-            <rect id="hover" fill="none" stroke="#4c9dff" stroke-width="1.5" display="none"/>
-            <g id="selection" fill="none" stroke="#4c9dff" stroke-width="2"></g>
+            <rect id="hover" fill="none" stroke="#7cc6ff" stroke-width="1.5" display="none"/>
+            <g id="selection" fill="none" stroke="#7cc6ff" stroke-width="2"></g>
             <g id="handles"></g>
-            <rect id="marquee" fill="rgba(76,157,255,.14)" stroke="#4c9dff" stroke-width="1.5" display="none"/>
+            <rect id="marquee" fill="rgba(124,198,255,.14)" stroke="#7cc6ff" stroke-width="1.5" display="none"/>
             <g id="pins"></g>
           </svg>
         </div>
@@ -609,16 +612,16 @@ function drawSelection() {
     const r = document.createElementNS(NS, "rect");
     r.setAttribute("class", `h ${id}`);
     r.setAttribute("x", x - size / 2); r.setAttribute("y", y - size / 2); r.setAttribute("width", size); r.setAttribute("height", size); r.setAttribute("rx", 2 * px);
-    r.setAttribute("fill", "#fff"); r.setAttribute("stroke", "#4c9dff"); r.setAttribute("stroke-width", 1.5 * px);
+    r.setAttribute("fill", "#fff"); r.setAttribute("stroke", "#7cc6ff"); r.setAttribute("stroke-width", 1.5 * px);
     r.addEventListener("pointerdown", startResize);
     hs.append(r);
   });
   const cx = (b.left + b.right) / 2, ky = b.top - 24 * px;
   const line = document.createElementNS(NS, "path");
-  line.setAttribute("d", `M${cx} ${b.top}V${ky}`); line.setAttribute("stroke", "#4c9dff"); line.setAttribute("stroke-width", 1.5 * px);
+  line.setAttribute("d", `M${cx} ${b.top}V${ky}`); line.setAttribute("stroke", "#7cc6ff"); line.setAttribute("stroke-width", 1.5 * px);
   const knob = document.createElementNS(NS, "circle");
   knob.setAttribute("class", "rot"); knob.setAttribute("cx", cx); knob.setAttribute("cy", ky); knob.setAttribute("r", 6.5 * px);
-  knob.setAttribute("fill", "#fff"); knob.setAttribute("stroke", "#4c9dff"); knob.setAttribute("stroke-width", 1.5 * px);
+  knob.setAttribute("fill", "#fff"); knob.setAttribute("stroke", "#7cc6ff"); knob.setAttribute("stroke-width", 1.5 * px);
   knob.addEventListener("pointerdown", startRotate);
   hs.append(line, knob);
 }
@@ -755,8 +758,8 @@ function addElement(html, name, extra = {}) {
 const SVG_STROKE = 'fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="overflow:visible;color:#fff;stroke-width:5"';
 const TOOLS = {
   text: () => addElement('<div style="color:#fff;font-size:44px;font-weight:700;letter-spacing:-.02em;white-space:pre">Ton texte</div>', "Texte"),
-  rect: () => addElement('<div style="width:220px;height:110px;background-color:#e78a53;border-radius:14px"></div>', "Rectangle", { shape: "box" }),
-  circle: () => addElement('<div style="width:140px;height:140px;background-color:#e78a53;border-radius:50%"></div>', "Cercle", { shape: "box" }),
+  rect: () => addElement('<div style="width:220px;height:110px;background-color:#2a8bf2;border-radius:14px"></div>', "Rectangle", { shape: "box" }),
+  circle: () => addElement('<div style="width:140px;height:140px;background-color:#2a8bf2;border-radius:50%"></div>', "Cercle", { shape: "box" }),
   star: () => addElement('<svg viewBox="0 0 24 24" fill="currentColor" style="width:110px;height:110px;color:#ffffff"><path d="M12 2.5l2.9 6.2 6.8.9-5 4.7 1.3 6.7L12 17l-6 3.3 1.3-6.7-5-4.7 6.8-.9z"/></svg>', "Étoile", { shape: "fill" }),
   line: () => addElement(`<svg viewBox="0 0 300 120" ${SVG_STROKE} width="300" height="120"><path/></svg>`, "Ligne", { shape: "stroke", curve: 0, head: 0 }),
   curve: () => addElement(`<svg viewBox="0 0 300 120" ${SVG_STROKE} width="300" height="120"><path/></svg>`, "Courbe", { shape: "stroke", curve: 60, head: 0 }),
@@ -1087,11 +1090,11 @@ function drawPins() {
   const all = pendingPin ? [...comments, pendingPin] : [...comments];
   const draft = markDraft && markFromDraft(markDraft);
   if (draft) all.push(draft);
-  const s = 1 / (scale || 1), color = "#4c9dff";
+  const s = 1 / (scale || 1), color = "#7cc6ff";
   const make = (tag, attrs) => { const n = document.createElementNS(NS, tag); Object.entries(attrs).forEach(([k, v]) => n.setAttribute(k, v)); g.append(n); return n; };
   const stroke = { fill: "none", stroke: color, "stroke-width": 3 * s, "stroke-linecap": "round", "stroke-linejoin": "round" };
   all.forEach((c, i) => {
-    if (c.kind === "zone") make("rect", { x: c.x, y: c.y, width: c.w, height: c.h, fill: "rgba(76,157,255,.14)", stroke: color, "stroke-width": 2.5 * s });
+    if (c.kind === "zone") make("rect", { x: c.x, y: c.y, width: c.w, height: c.h, fill: "rgba(124,198,255,.14)", stroke: color, "stroke-width": 2.5 * s });
     if (c.kind === "pen") make("polyline", { ...stroke, points: c.path.map((p) => p.join(",")).join(" ") });
     if (c.kind === "arrow") {
       const a = Math.atan2(c.y2 - c.y, c.x2 - c.x), l = 18 * s;
