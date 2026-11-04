@@ -7,10 +7,10 @@
 <style>
 @font-face { font-family: "Inter"; src: url("/editor/inter.woff2") format("woff2"); font-weight: 100 900; }
 :root {
-  --bg: #06111f; --canvas: #091626; --panel: #0d1c30; --raised: #13253d; --hover: #1a304d;
-  --line: #1c3150; --line2: #284466; --ink: #f2f6fb; --soft: #a9b9cd; --muted: #7187a4;
-  --accent: #4fa6ff; --accent-soft: rgba(79,166,255,.16); --accent-grad: linear-gradient(135deg, #7cc6ff 0%, #2a8bf2 45%, #0b5cc4 100%);
-  --select: #7cc6ff; --warn: #f2c14e; --danger: #f0705f;
+  --bg: #ffffff; --canvas: #f2f6fc; --panel: #ffffff; --raised: #f3f7fd; --hover: #eaf2fd;
+  --line: #e1e9f4; --line2: #cfdcec; --ink: #0a3d7a; --soft: #3f6593; --muted: #7d95b4;
+  --accent: #1f78ee; --accent-soft: rgba(31,120,238,.10); --accent-grad: linear-gradient(135deg, #4fa6ff 0%, #1f78ee 45%, #0b5cc4 100%);
+  --select: #1f78ee; --warn: #f2c14e; --danger: #f0705f;
   --r: 8px;
 }
 * { box-sizing: border-box; }
@@ -49,28 +49,28 @@ svg.i { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-widt
 .tool.on { background: var(--accent-grad); color: #fff; }
 .rail-sep { width: 26px; height: 1px; margin: 6px 0; background: var(--line2); flex: none; }
 [data-tip] { position: relative; }
-#tip { position: fixed; z-index: 50; padding: 5px 9px; border-radius: 6px; background: #000; color: #fff; font-size: 12px; white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity .1s; }
-#tip kbd { margin-left: 8px; color: #9b9994; font: inherit; }
+#tip { position: fixed; z-index: 50; padding: 5px 9px; border-radius: 6px; background: #0a3d7a; color: #fff; font-size: 12px; white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity .1s; }
+#tip kbd { margin-left: 8px; color: #a9c8ef; font: inherit; }
 
 /* Canevas */
-#stage { grid-area: stage; position: relative; min-width: 0; min-height: 0; background-color: var(--canvas); background-image: radial-gradient(rgba(255,255,255,.055) 1px, transparent 1px); background-size: 20px 20px; }
+#stage { grid-area: stage; position: relative; min-width: 0; min-height: 0; background-color: var(--canvas); background-image: radial-gradient(rgba(10,61,122,.10) 1px, transparent 1px); background-size: 20px 20px; }
 #scroller { position: absolute; inset: 0; display: flex; overflow: auto; padding: 44px; scrollbar-color: var(--line2) transparent; }
 #sizer { position: relative; margin: auto; flex: none; }
-#frameWrap { position: absolute; left: 0; top: 0; width: 1584px; height: 396px; transform-origin: 0 0; border-radius: 3px; box-shadow: 0 0 0 1px rgba(255,255,255,.07), 0 26px 70px rgba(0,0,0,.55); }
+#frameWrap { position: absolute; left: 0; top: 0; width: 1584px; height: 396px; transform-origin: 0 0; border-radius: 3px; box-shadow: 0 0 0 1px rgba(10,61,122,.08), 0 26px 60px rgba(10,61,122,.22); }
 iframe#frame { position: absolute; inset: 0; width: 1584px; height: 396px; border: 0; display: block; background: #222; }
 #overlay { position: absolute; inset: 0; width: 1584px; height: 396px; pointer-events: none; overflow: visible; }
 #handles .h { pointer-events: all; cursor: nwse-resize; }
 #handles .h.ne, #handles .h.sw { cursor: nesw-resize; }
 #handles .rot { pointer-events: all; cursor: grab; }
 body.commenting #warn { top: 58px; }
-#commentBar { position: absolute; left: 50%; top: 10px; z-index: 5; transform: translateX(-50%); display: none; gap: 2px; padding: 4px; border-radius: 11px; background: var(--raised); border: 1px solid var(--line2); box-shadow: 0 10px 28px rgba(0,0,0,.45); }
+#commentBar { position: absolute; left: 50%; top: 10px; z-index: 5; transform: translateX(-50%); display: none; gap: 2px; padding: 4px; border-radius: 11px; background: var(--raised); border: 1px solid var(--line2); box-shadow: 0 10px 28px rgba(10,61,122,.14); }
 body.commenting #commentBar { display: flex; }
 #commentBar button { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 10px; border-radius: 7px; color: var(--soft); font-size: 12.5px; white-space: nowrap; }
 #commentBar button:hover { background: var(--hover); color: var(--ink); }
 #commentBar button.on { background: var(--accent-soft); color: var(--accent); }
 #commentBar svg.i { width: 15px; height: 15px; }
 
-#zoomBar { position: absolute; left: 50%; bottom: 16px; z-index: 5; transform: translateX(-50%); display: flex; align-items: center; gap: 2px; padding: 4px; border-radius: 11px; background: var(--raised); border: 1px solid var(--line2); box-shadow: 0 10px 28px rgba(0,0,0,.45); }
+#zoomBar { position: absolute; left: 50%; bottom: 16px; z-index: 5; transform: translateX(-50%); display: flex; align-items: center; gap: 2px; padding: 4px; border-radius: 11px; background: var(--raised); border: 1px solid var(--line2); box-shadow: 0 10px 28px rgba(10,61,122,.14); }
 #zoomBar .icon { width: 30px; height: 30px; }
 #zoomPct { min-width: 52px; height: 30px; border-radius: 7px; color: var(--ink); font-size: 12.5px; font-variant-numeric: tabular-nums; }
 #zoomPct:hover { background: var(--hover); }
@@ -80,7 +80,7 @@ body.commenting #commentBar { display: flex; }
 .card { margin: 0 auto 22px; max-width: 1200px; }
 .card header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
 .card h3 { margin: 0; font-size: 13px; font-weight: 600; }
-.card .box { position: relative; overflow: hidden; border-radius: 4px; box-shadow: 0 0 0 1px rgba(255,255,255,.07), 0 16px 40px rgba(0,0,0,.42); }
+.card .box { position: relative; overflow: hidden; border-radius: 4px; box-shadow: 0 0 0 1px rgba(10,61,122,.08), 0 16px 36px rgba(10,61,122,.18); }
 .card iframe, .card svg { position: absolute; left: 0; top: 0; width: 1584px; height: 396px; transform-origin: 0 0; border: 0; pointer-events: none; }
 
 /* Bannières */
@@ -90,7 +90,7 @@ body.commenting #commentBar { display: flex; }
 .filters .seg button { flex: 0 1 auto; height: 22px; padding: 0 7px; font-size: 11px; white-space: nowrap; }
 .thumbs { display: flex; gap: 10px; flex: none; }
 .thumb { flex: none; text-align: left; }
-.thumb .pic { position: relative; display: block; height: 42px; overflow: hidden; border-radius: 5px; background: #222; box-shadow: 0 0 0 1px var(--line2); transition: box-shadow .12s; }
+.thumb .pic { position: relative; display: block; height: 42px; overflow: hidden; border-radius: 5px; background: #e6eef8; box-shadow: 0 0 0 1px var(--line2); transition: box-shadow .12s; }
 .thumb:hover .pic { box-shadow: 0 0 0 1px var(--muted); }
 .thumb.on .pic { box-shadow: 0 0 0 2px var(--accent); }
 .thumb iframe { border: 0; transform-origin: 0 0; pointer-events: none; }
@@ -127,7 +127,7 @@ textarea.txt:focus { border-color: var(--accent); }
 .color { display: flex; align-items: center; gap: 9px; height: 32px; padding: 0 9px 0 5px; border-radius: 7px; background: var(--raised); cursor: pointer; }
 .color input { width: 22px; height: 22px; padding: 0; border: 0; border-radius: 5px; background: none; cursor: pointer; }
 .color input::-webkit-color-swatch-wrapper { padding: 0; }
-.color input::-webkit-color-swatch { border: 1px solid rgba(255,255,255,.2); border-radius: 5px; }
+.color input::-webkit-color-swatch { border: 1px solid rgba(10,61,122,.18); border-radius: 5px; }
 .color span { color: var(--soft); font-size: 12px; }
 .slider { display: grid; grid-template-columns: 72px 1fr 34px; align-items: center; gap: 8px; height: 30px; color: var(--soft); font-size: 12px; }
 .slider input { width: 100%; accent-color: var(--accent); }
@@ -151,7 +151,7 @@ textarea.txt:focus { border-color: var(--accent); }
 .comment .act button { padding: 3px 8px; border-radius: 5px; background: var(--hover); color: var(--soft); font-size: 11.5px; }
 .comment .act button:hover { color: var(--ink); }
 
-#toast { position: fixed; right: 320px; bottom: 108px; z-index: 40; display: none; width: 340px; padding: 11px; border-radius: 12px; background: var(--raised); border: 1px solid var(--line2); box-shadow: 0 18px 50px rgba(0,0,0,.55); }
+#toast { position: fixed; right: 320px; bottom: 108px; z-index: 40; display: none; width: 340px; padding: 11px; border-radius: 12px; background: var(--raised); border: 1px solid var(--line2); box-shadow: 0 18px 50px rgba(10,61,122,.18); }
 #toast img { display: block; width: 100%; margin-bottom: 9px; border-radius: 4px; }
 #toast div { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 #toast a { color: var(--accent); font-weight: 600; text-decoration: none; }
@@ -163,7 +163,7 @@ textarea.txt:focus { border-color: var(--accent); }
 <body>
 <div id="app">
   <header id="top">
-    <div class="brand"><svg viewBox="40 28 176 200" aria-hidden="true"><defs><linearGradient id="bannia-grad" gradientUnits="userSpaceOnUse" x1="40" y1="28" x2="216" y2="228"><stop offset="0" stop-color="#A8DAFF"/><stop offset=".4" stop-color="#4FA6FF"/><stop offset=".75" stop-color="#1F78EE"/><stop offset="1" stop-color="#1258C2"/></linearGradient></defs><path fill="url(#bannia-grad)" d="M40 28H154A46 46 0 0 1 154 120H40Z M40 136H174A46 46 0 0 1 174 228H40Z"/></svg><b>Bannia</b><span>Editor</span></div>
+    <div class="brand"><svg viewBox="40 28 176 200" aria-hidden="true"><defs><linearGradient id="bannia-grad" gradientUnits="userSpaceOnUse" x1="40" y1="28" x2="216" y2="228"><stop offset="0" stop-color="#7CC6FF"/><stop offset=".38" stop-color="#2A8BF2"/><stop offset=".72" stop-color="#0B5CC4"/><stop offset="1" stop-color="#083A7A"/></linearGradient></defs><path fill="url(#bannia-grad)" d="M40 28H154A46 46 0 0 1 154 120H40Z M40 136H174A46 46 0 0 1 174 228H40Z"/></svg><b>Bannia</b><span>Editor</span></div>
     <div id="bannerName"></div>
     <div class="sep"></div>
     <button class="icon" id="undo" data-tip="Annuler" data-key="Ctrl+Z" aria-label="Annuler" disabled></button>
@@ -193,10 +193,10 @@ textarea.txt:focus { border-color: var(--accent); }
               <circle id="photoRing" fill="#fff"/>
               <image id="photoImg" preserveAspectRatio="xMidYMid slice" clip-path="url(#photoClip)"/>
             </g>
-            <rect id="hover" fill="none" stroke="#7cc6ff" stroke-width="1.5" display="none"/>
-            <g id="selection" fill="none" stroke="#7cc6ff" stroke-width="2"></g>
+            <rect id="hover" fill="none" stroke="#1f78ee" stroke-width="1.5" display="none"/>
+            <g id="selection" fill="none" stroke="#1f78ee" stroke-width="2"></g>
             <g id="handles"></g>
-            <rect id="marquee" fill="rgba(124,198,255,.14)" stroke="#7cc6ff" stroke-width="1.5" display="none"/>
+            <rect id="marquee" fill="rgba(31,120,238,.12)" stroke="#1f78ee" stroke-width="1.5" display="none"/>
             <g id="pins"></g>
           </svg>
         </div>
@@ -612,16 +612,16 @@ function drawSelection() {
     const r = document.createElementNS(NS, "rect");
     r.setAttribute("class", `h ${id}`);
     r.setAttribute("x", x - size / 2); r.setAttribute("y", y - size / 2); r.setAttribute("width", size); r.setAttribute("height", size); r.setAttribute("rx", 2 * px);
-    r.setAttribute("fill", "#fff"); r.setAttribute("stroke", "#7cc6ff"); r.setAttribute("stroke-width", 1.5 * px);
+    r.setAttribute("fill", "#fff"); r.setAttribute("stroke", "#1f78ee"); r.setAttribute("stroke-width", 1.5 * px);
     r.addEventListener("pointerdown", startResize);
     hs.append(r);
   });
   const cx = (b.left + b.right) / 2, ky = b.top - 24 * px;
   const line = document.createElementNS(NS, "path");
-  line.setAttribute("d", `M${cx} ${b.top}V${ky}`); line.setAttribute("stroke", "#7cc6ff"); line.setAttribute("stroke-width", 1.5 * px);
+  line.setAttribute("d", `M${cx} ${b.top}V${ky}`); line.setAttribute("stroke", "#1f78ee"); line.setAttribute("stroke-width", 1.5 * px);
   const knob = document.createElementNS(NS, "circle");
   knob.setAttribute("class", "rot"); knob.setAttribute("cx", cx); knob.setAttribute("cy", ky); knob.setAttribute("r", 6.5 * px);
-  knob.setAttribute("fill", "#fff"); knob.setAttribute("stroke", "#7cc6ff"); knob.setAttribute("stroke-width", 1.5 * px);
+  knob.setAttribute("fill", "#fff"); knob.setAttribute("stroke", "#1f78ee"); knob.setAttribute("stroke-width", 1.5 * px);
   knob.addEventListener("pointerdown", startRotate);
   hs.append(line, knob);
 }
@@ -1090,11 +1090,11 @@ function drawPins() {
   const all = pendingPin ? [...comments, pendingPin] : [...comments];
   const draft = markDraft && markFromDraft(markDraft);
   if (draft) all.push(draft);
-  const s = 1 / (scale || 1), color = "#7cc6ff";
+  const s = 1 / (scale || 1), color = "#1f78ee";
   const make = (tag, attrs) => { const n = document.createElementNS(NS, tag); Object.entries(attrs).forEach(([k, v]) => n.setAttribute(k, v)); g.append(n); return n; };
   const stroke = { fill: "none", stroke: color, "stroke-width": 3 * s, "stroke-linecap": "round", "stroke-linejoin": "round" };
   all.forEach((c, i) => {
-    if (c.kind === "zone") make("rect", { x: c.x, y: c.y, width: c.w, height: c.h, fill: "rgba(124,198,255,.14)", stroke: color, "stroke-width": 2.5 * s });
+    if (c.kind === "zone") make("rect", { x: c.x, y: c.y, width: c.w, height: c.h, fill: "rgba(31,120,238,.12)", stroke: color, "stroke-width": 2.5 * s });
     if (c.kind === "pen") make("polyline", { ...stroke, points: c.path.map((p) => p.join(",")).join(" ") });
     if (c.kind === "arrow") {
       const a = Math.atan2(c.y2 - c.y, c.x2 - c.x), l = 18 * s;
