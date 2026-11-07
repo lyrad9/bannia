@@ -37,7 +37,7 @@ Lis `../linkedin-banner/references/selection.md`, puis regarde les images candid
 
 Inspire-toi fortement de la composition, de la hiérarchie et du traitement du fond de la référence, tout en gardant ta créativité : apporte une idée à toi, liée au métier de l'utilisateur, et l'identité de sa marque. Ne reprends jamais le texte, le logo, le nom ni la photo de la référence.
 
-Crée un dossier avec un `banner.html` de 1200 × 627 px :
+Crée un dossier dans le même projet de la bibliothèque que la bannière de l'utilisateur, ou dans un nouveau projet s'il n'en a pas (voir « Où enregistrer » dans `../linkedin-banner/SKILL.md`), avec un `banner.html` de 1200 × 627 px :
 
 ```html
 <meta name="banner-size" content="1200x627">
@@ -56,10 +56,10 @@ Rédige aussi la version anglaise, dans un dossier frère suffixé `-en`. Écris
 
 ## 4. Exporter et présenter
 
-Ouvre l'éditeur sur le dossier parent :
+Ouvre l'éditeur sur le projet :
 
 ```bash
-node ../linkedin-banner/editor/server.mjs <dossier> --port 4180
+node ../linkedin-banner/editor/server.mjs <dossier-du-projet> --port 4180
 ```
 
 Le filtre « Sélection » y réunit les visuels. Regarde le PNG en taille réelle et réduit à 300 px avant de le présenter, puis dis ce que tu as repris de la référence et ce que tu as ajouté.

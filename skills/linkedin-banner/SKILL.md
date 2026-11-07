@@ -48,7 +48,18 @@ Inspire-toi fortement de la composition, de la hiérarchie et du traitement du f
 
 Crée 3 directions vraiment différentes, chacune dans son dossier, et cherche pour au moins l'une d'elles une idée visuelle liée au métier de l'utilisateur. Un fond joli sans idée ne suffit pas. Exemple réussi : pour quelqu'un qui crée des produits numériques, le mot clé de la tagline encadré comme un objet sélectionné dans un outil de design, avec ses poignées et un curseur.
 
-Écris un fichier `banner.html` de 1584 × 396 px, dans un dossier dédié avec ses images et sa police, avec ces contraintes :
+### Où enregistrer
+
+Toutes les créations de l'utilisateur vont dans sa bibliothèque, pour qu'il les retrouve depuis l'éditeur :
+
+- Lis `~/.bannia/config.json` : la clé `library` donne le chemin de la bibliothèque. Sans ce fichier, la bibliothèque par défaut est `~/Bannia`.
+- À sa première bannière, si `~/.bannia/config.json` n'existe pas, dis-lui où elle sera enregistrée et demande-lui s'il garde cet emplacement ou en préfère un autre. Écris sa réponse dans `~/.bannia/config.json`, sous la forme `{ "library": "<chemin complet>" }`.
+- Crée un sous-dossier par projet dans la bibliothèque, avec un nom court et lisible (`<bibliothèque>/ma-banniere/`), et dans ce projet un sous-dossier par direction et par langue (`direction-a`, `direction-a-en`…).
+- Les suites d'une bannière (déclinaisons, Sélection, éditions de fête) vont dans le même projet, sauf si l'utilisateur demande un projet à part.
+
+### Écrire la bannière
+
+Écris un fichier `banner.html` de 1584 × 396 px, dans le dossier de sa direction avec ses images et sa police, avec ces contraintes :
 
 - **Éditeur :** ajoute `data-el="Nom lisible"` sur chaque élément modifiable (`data-el="Tagline"`, `data-el="Call to action"`), `data-repeat` sur ceux qu'on peut dupliquer, comme les logos et les services, et `data-decor` sur les motifs décoratifs qui peuvent rester dans la zone mobile. Déclare les couleurs dans `:root` avec `--primary`, `--light`, `--deep` et `--text`. Exemple complet : `exemple/banner.html`, à côté de ce fichier.
 
@@ -72,15 +83,20 @@ Regarde le PNG avant de le présenter. Vérifie les dimensions exactes, le charg
 
 ## 5. Présenter et itérer
 
-Montre le PNG et dis quelles références ont inspiré quoi. Puis ouvre le mini-éditeur sur le dossier de la bannière :
+Montre le PNG et dis quelles références ont inspiré quoi. Puis ouvre le mini-éditeur sur le projet :
 
 ```bash
-node editor/server.mjs <dossier-de-la-banniere> --port 4180
+node editor/server.mjs <dossier-du-projet> --port 4180
 ```
 
-Le dossier peut contenir `banner.html`, ou plusieurs sous-dossiers qui en contiennent chacun un : l'éditeur les affiche alors ensemble et permet de les comparer. Passe-lui donc le dossier parent de tes 3 directions.
+Le projet peut contenir `banner.html`, ou plusieurs sous-dossiers qui en contiennent chacun un : l'éditeur les affiche alors ensemble et permet de les comparer. Passe-lui donc le dossier du projet, qui contient tes 3 directions. Sans dossier indiqué, l'éditeur ouvre le dernier projet modifié de la bibliothèque.
 
-Avant de le lancer, vérifie que le port est libre et change-le si besoin. L'utilisateur peut y sélectionner, déplacer, agrandir, tourner et retourner les éléments, ajouter du texte, des images, des formes, des lignes, des courbes et des flèches, zoomer, simuler sa photo de profil, dupliquer, importer ou supprimer des bannières, et laisser des commentaires. Une bannière supprimée part dans le dossier `.corbeille`, d'où elle reste récupérable. La photo simulée n'apparaît jamais dans l'export. L'éditeur enregistre tout seul, dans chaque dossier :
+Avant de le lancer, vérifie que le port est libre et change-le si besoin. L'utilisateur peut y sélectionner, déplacer, agrandir, tourner et retourner les éléments, ajouter du texte, des images, des formes, des lignes, des courbes et des flèches, zoomer, simuler sa photo de profil, dupliquer, importer ou supprimer des bannières, et laisser des commentaires.
+
+Deux fonctions de l'éditeur lui évitent de repasser par toi pour les tâches courantes :
+
+- **Mes bannières :** liste les projets de sa bibliothèque avec leur aperçu. Il en ouvre un d'un clic, sans explorateur de fichiers. Il peut aussi y changer le dossier de la bibliothèque, ou y ajouter le projet ouvert s'il se trouve ailleurs.
+- **Adapter à une fête ou un thème :** dans le panneau de droite, il choisit une fête ou un thème, une intensité, et s'il le veut un message ou une offre. L'éditeur copie un prompt prêt pour `banner-festive`, avec le chemin de la bannière. Quand il te le colle, suis `banner-festive` sans reposer les questions auxquelles le prompt répond déjà. Une bannière supprimée part dans le dossier `.corbeille`, d'où elle reste récupérable. La photo simulée n'apparaît jamais dans l'export. L'éditeur enregistre tout seul, dans chaque dossier :
 
 - `banner.html` : la bannière modifiée ;
 - `banner.original.html` : la version de départ ;
@@ -93,6 +109,6 @@ Applique les retours sans refaire ce qui plaît déjà.
 
 ## 6. Décliner
 
-Quand une direction est choisie, propose les suites : `banner-adapt` pour X, WhatsApp et Facebook, et `linkedin-featured` pour les visuels de la section Sélection. Crée-les dans des dossiers frères : l'éditeur les affiche ensemble, avec un filtre par format et par langue.
+Quand une direction est choisie, propose les suites : `banner-adapt` pour X, WhatsApp et Facebook, `linkedin-featured` pour les visuels de la section Sélection, et `banner-festive` si une fête approche dans les prochaines semaines. Crée-les dans le même projet de la bibliothèque : l'éditeur les affiche ensemble, avec un filtre par format, par langue et par fête.
 
 Signale ce que l'utilisateur doit vérifier : l'accord des clients pour leurs logos, la réalité des chiffres, et le rendu sur son propre téléphone. Ne publie jamais la bannière toi-même sans son accord explicite.

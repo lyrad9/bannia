@@ -23,7 +23,7 @@ Ces zones sont des estimations. Corrige ce fichier si un contrôle réel montre 
 
 ## Créer les déclinaisons
 
-Crée un dossier frère par réseau et par langue, par exemple `ma-banniere-x-fr` et `ma-banniere-x-en`, avec son `banner.html`, sa police et ses images, et ces balises :
+Crée les déclinaisons dans le même projet de la bibliothèque que la bannière de départ (voir « Où enregistrer » dans `../linkedin-banner/SKILL.md`). Fais un dossier par réseau et par langue, par exemple `x-fr` et `x-en`, avec son `banner.html`, sa police et ses images, et ces balises :
 
 ```html
 <meta name="banner-size" content="1500x500">
@@ -39,10 +39,10 @@ Crée un dossier frère par réseau et par langue, par exemple `ma-banniere-x-fr
 
 ## Contrôler et présenter
 
-Ouvre l'éditeur sur le dossier parent :
+Ouvre l'éditeur sur le projet :
 
 ```bash
-node ../linkedin-banner/editor/server.mjs <dossier> --port 4180
+node ../linkedin-banner/editor/server.mjs <dossier-du-projet> --port 4180
 ```
 
 Il lit la taille et le format de chaque dossier, affiche la bonne zone et la bonne photo simulée, et permet de filtrer par réseau et par langue. Vérifie que la photo simulée ne cache rien d'important, regarde chaque PNG, et ne publie jamais rien toi-même sans l'accord explicite de l'utilisateur.

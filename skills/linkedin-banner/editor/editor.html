@@ -156,6 +156,36 @@ textarea.txt:focus { border-color: var(--accent); }
 #toast div { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 #toast a { color: var(--accent); font-weight: 600; text-decoration: none; }
 #toast small { color: var(--muted); }
+/* Fête ou thème */
+.seg.wrap { flex-wrap: wrap; }
+.seg.wrap button { flex: 0 1 auto; height: 26px; padding: 0 8px; font-size: 11.5px; white-space: nowrap; }
+.f.text input { text-align: left; }
+.f.text + .f.text, .seg + .f.text, .f.text + textarea.txt { margin-top: 7px; }
+textarea.prompt { min-height: 150px; margin-top: 9px; font-size: 11.5px; color: var(--soft); }
+
+/* Bibliothèque */
+#library { position: fixed; inset: 0; z-index: 45; display: none; place-items: center; background: rgba(10,30,60,.32); }
+#library.open { display: grid; }
+.lib { display: flex; flex-direction: column; width: min(940px, calc(100vw - 32px)); max-height: calc(100vh - 64px); border-radius: 14px; background: var(--panel); box-shadow: 0 24px 70px rgba(10,61,122,.28); overflow: hidden; }
+.lib > header { display: flex; align-items: center; gap: 10px; padding: 12px 12px 12px 18px; border-bottom: 1px solid var(--line); }
+.lib > header h2 { flex: 1; margin: 0; font-size: 15px; font-weight: 650; letter-spacing: -.01em; }
+.lib .path { display: flex; align-items: center; gap: 8px; padding: 10px 18px; border-bottom: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+.lib .path code { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink); font: 12px ui-monospace, Consolas, monospace; }
+.lib .path .f { flex: 1; }
+.lib .btn.small { width: auto; flex: none; margin: 0; }
+.lib .note { display: flex; align-items: center; gap: 12px; margin: 14px 18px 0; padding: 10px 12px; border-radius: 9px; background: var(--accent-soft); color: var(--ink); }
+.lib .note p { flex: 1; margin: 0; }
+.lib .err { margin: 10px 18px 0; color: var(--danger); }
+.projects { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; padding: 16px 18px 18px; overflow-y: auto; }
+.project { display: flex; flex-direction: column; gap: 6px; padding: 8px; border: 1px solid var(--line); border-radius: 10px; text-align: left; transition: border-color .12s, background .12s; }
+.project:hover { border-color: var(--muted); background: var(--raised); }
+.project.on { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.project .cover { position: relative; display: block; width: 100%; aspect-ratio: 4 / 1; overflow: hidden; border-radius: 6px; background: #e6eef8; }
+.project .cover img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.project .cover iframe { position: absolute; left: 0; top: 0; width: 1584px; height: 396px; border: 0; transform-origin: 0 0; pointer-events: none; }
+.project b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
+.project small { color: var(--muted); }
+.lib .emptylib { padding: 28px 18px; color: var(--muted); }
 @media (max-width: 1050px) { .pill span.lbl, #bannerName { display: none; } #app { grid-template-columns: 56px minmax(0, 1fr) 262px; } #toast { right: 276px; } }
 @media (max-width: 760px) { #app { grid-template: 54px minmax(180px, 1fr) 92px minmax(0, 1fr) / 56px minmax(0, 1fr); grid-template-areas: "top top" "rail stage" "rail strip" "side side"; } #side { border-left: 0; border-top: 1px solid var(--line); } #toast { right: 12px; } }
 </style>
@@ -165,6 +195,8 @@ textarea.txt:focus { border-color: var(--accent); }
   <header id="top">
     <div class="brand"><svg viewBox="40 28 176 200" aria-hidden="true"><defs><linearGradient id="bannia-grad" gradientUnits="userSpaceOnUse" x1="40" y1="28" x2="216" y2="228"><stop offset="0" stop-color="#7CC6FF"/><stop offset=".38" stop-color="#2A8BF2"/><stop offset=".72" stop-color="#0B5CC4"/><stop offset="1" stop-color="#083A7A"/></linearGradient></defs><path fill="url(#bannia-grad)" d="M40 28H154A46 46 0 0 1 154 120H40Z M40 136H174A46 46 0 0 1 174 228H40Z"/></svg><b>Bannia</b><span>Editor</span></div>
     <div id="bannerName"></div>
+    <div class="sep"></div>
+    <button class="pill" id="openLibrary" data-tip="Ouvrir une bannière de ta bibliothèque"></button>
     <div class="sep"></div>
     <button class="icon" id="undo" data-tip="Annuler" data-key="Ctrl+Z" aria-label="Annuler" disabled></button>
     <button class="icon" id="redo" data-tip="Rétablir" data-key="Ctrl+Y" aria-label="Rétablir" disabled></button>
@@ -225,6 +257,7 @@ textarea.txt:focus { border-color: var(--accent); }
 </div>
 <div id="tip" role="tooltip"></div>
 <div id="toast" role="status"></div>
+<div id="library" role="dialog" aria-modal="true" aria-label="Mes bannières"></div>
 <input id="filePick" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" hidden>
 
 <script>
@@ -241,7 +274,10 @@ const FORMATS = {
   featured: { label: "Sélection" },
 };
 const FILTERS = [["all", "Tous"], ["linkedin", "LinkedIn"], ["x", "X"], ["facebook", "Facebook"], ["whatsapp", "WhatsApp"], ["featured", "Sélection"]];
-let format = FORMATS.linkedin, filter = "all", filterLang = "all";
+// Noms affichés des fêtes déclarées par <meta name="banner-occasion"> (skill banner-festive).
+const OCCASIONS = { "nouvel-an": "Nouvel An", "saint-valentin": "Saint-Valentin", ramadan: "Ramadan", "aid-el-fitr": "Aïd el-Fitr", paques: "Pâques", "fete-du-travail": "Fête du travail", tabaski: "Tabaski", "fete-des-meres": "Fête des mères", "fete-des-peres": "Fête des pères", rentree: "Rentrée", halloween: "Halloween", "black-friday": "Black Friday", noel: "Noël", "fete-nationale": "Fête nationale" };
+const occasionLabel = (id) => OCCASIONS[id] || id.replace(/-/g, " ").replace(/^./, (c) => c.toUpperCase());
+let format = FORMATS.linkedin, filter = "all", filterLang = "all", filterOccasion = "all";
 const COLORS = [["--primary", "Principale"], ["--light", "Claire"], ["--deep", "Foncée"], ["--text", "Texte"]];
 const FONTS = [["Inter", "Inter"], ["Georgia, serif", "Georgia"], ["Impact, sans-serif", "Impact"], ["'Courier New', monospace", "Courier"], ["'Segoe Script', cursive", "Script"]];
 
@@ -277,6 +313,9 @@ const I = {
   trash: '<path d="M4 7h16M9.5 7V4.5h5V7M6 7l1 13h10l1-13"/>',
   swap: '<path d="M4 8h13M13 4l4 4-4 4M20 16H7M11 12l-4 4 4 4"/>',
   zone: '<circle cx="12" cy="12" r="2"/><path d="M4 8V4h4M16 4h4v4M20 16v4h-4M8 20H4v-4"/>',
+  folder: '<path d="M3.5 7.5A2 2 0 0 1 5.5 5.5h4l2 2.5h7a2 2 0 0 1 2 2v7.5a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/>',
+  close: '<path d="M6 6l12 12M18 6L6 18"/>',
+  sparkle: '<path d="M12 3.5l1.9 5.2 5.1 1.8-5.1 1.8L12 17.5l-1.9-5.2L5 10.5l5.1-1.8z"/><path d="M18.5 15.5l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/>',
   pen: '<path d="M4 20l1-4L16.5 4.500a2 2 0 0 1 3 3L8 19z"/>',
 };
 const icon = (name) => `<svg class="i" viewBox="0 0 24 24" aria-hidden="true">${I[name]}</svg>`;
@@ -486,6 +525,7 @@ function renderProps() {
     const pictures = [btn("user", photo ? "Changer la photo" : "Ajouter ma photo", () => pickFile(uploadPhoto))];
     if (photo) pictures.push(btn("trash", "Retirer la photo", removePhoto));
     box.append(sec("Photo de profil", ...pictures, h("p", { className: "empty", style: "margin-top:9px;font-size:12px", textContent: "Simulation seulement : elle n'apparaît pas dans l'export." })));
+    box.append(festiveSection());
     box.append(sec("Bannière", btn("copy", "Dupliquer la bannière", duplicateBanner), btn("undo", "Revenir à l'original", restoreBanner), btn("trash", "Supprimer la bannière", () => deleteBanner(), "danger")));
     return;
   }
@@ -901,6 +941,7 @@ function bindFrame() {
 }
 
 function onKey(e) {
+  if ($("library").classList.contains("open")) { if (e.key === "Escape") closeLibrary(); return; }
   const tag = (e.target.tagName || "").toLowerCase();
   if (tag === "input" || tag === "textarea" || tag === "select") return;
   const ctrl = e.ctrlKey || e.metaKey;
@@ -1150,7 +1191,7 @@ async function refreshBanners() {
   renderStrip();
   applyPhoto();
 }
-const visibleBanners = () => banners.filter((b) => (filter === "all" || b.format === filter) && (filterLang === "all" || b.lang === filterLang));
+const visibleBanners = () => banners.filter((b) => (filter === "all" || b.format === filter) && (filterLang === "all" || b.lang === filterLang) && (filterOccasion === "all" || (b.occasion || "") === filterOccasion));
 function renderFilters() {
   const box = h("div", { className: "filters" });
   const row = h("div", { className: "seg" });
@@ -1165,6 +1206,14 @@ function renderFilters() {
       langs.append(h("button", { className: filterLang === id ? "on" : "", textContent: text, onclick: () => { filterLang = id; renderStrip(); if (compareOn) renderCompare(); } }));
     });
     box.append(langs);
+  }
+  const occasions = [...new Set(banners.map((b) => b.occasion || ""))];
+  if (occasions.some(Boolean)) {
+    const row = h("div", { className: "seg" });
+    [["all", "Toutes"], ...occasions.sort().map((id) => [id, id ? occasionLabel(id) : "Sans fête"])].forEach(([id, text]) => {
+      row.append(h("button", { className: filterOccasion === id ? "on" : "", textContent: text, onclick: () => { filterOccasion = id; renderStrip(); if (compareOn) renderCompare(); } }));
+    });
+    box.append(row);
   }
   return box;
 }
@@ -1188,9 +1237,9 @@ function renderStrip() {
     list.append(card);
   });
   const dup = h("button", { className: "add", innerHTML: `${icon("copy")}Dupliquer`, onclick: duplicateBanner });
-  const imp = h("button", { className: "add", innerHTML: `${icon("plus")}Importer`, onclick: () => pickFile(importBanner) });
+  const imp = h("button", { className: "add", innerHTML: `${icon("folder")}Importer`, onclick: () => openLibrary() });
   dup.dataset.tip = "Créer une variante de cette bannière";
-  imp.dataset.tip = "Ajouter une image pour la comparer";
+  imp.dataset.tip = "Ouvrir une de tes bannières, ou ajouter une image";
   const del = h("button", { className: "add", innerHTML: `${icon("trash")}Supprimer`, onclick: () => deleteBanner() });
   del.dataset.tip = "Mettre cette bannière à la corbeille";
   strip.append(dup, imp, del);
@@ -1236,7 +1285,7 @@ async function deleteBanner(id = current) {
   const data = await res.json();
   if (!res.ok) { setStatus(data.error); return; }
   await refreshBanners();
-  if (!visibleBanners().length) { filter = "all"; filterLang = "all"; renderStrip(); }
+  if (!visibleBanners().length) { filter = "all"; filterLang = "all"; filterOccasion = "all"; renderStrip(); }
   if (wasCurrent) {
     const keepCompare = compareOn;
     current = null;
@@ -1275,7 +1324,7 @@ function renderCompare() {
     view.style.width = `${b.w}px`; view.style.height = `${b.h}px`;
     area.append(view);
     area.insertAdjacentHTML("beforeend", overlayMarkup(i, b));
-    const card = h("section", { className: "card" }, h("header", {}, h("h3", { textContent: `${b.name} · ${(FORMATS[b.format] || FORMATS.linkedin).label} · ${b.w} × ${b.h}` }), h("div", {}, edit, remove)), area);
+    const card = h("section", { className: "card" }, h("header", {}, h("h3", { textContent: `${b.name} · ${(FORMATS[b.format] || FORMATS.linkedin).label}${b.occasion ? ` · ${occasionLabel(b.occasion)}` : ""} · ${b.w} × ${b.h}` }), h("div", {}, edit, remove)), area);
     card.dataset.w = b.w; card.dataset.h = b.h;
     if (b.w / b.h < 2.2) card.style.maxWidth = "620px";
     box.append(card);
@@ -1306,6 +1355,8 @@ function setCompare(on) {
 function labelled(el, ic, text) { el.innerHTML = `${icon(ic)}<span class="lbl">${text}</span>`; }
 $("undo").innerHTML = icon("undo"); $("redo").innerHTML = icon("redo");
 $("zoomOut").innerHTML = icon("minus"); $("zoomIn").innerHTML = icon("plus");
+labelled($("openLibrary"), "folder", "Mes bannières");
+$("openLibrary").onclick = () => openLibrary();
 labelled($("toggleZone"), "phone", "Zone mobile");
 labelled($("togglePhoto"), "user", "Photo");
 labelled($("toggleCompare"), "compare", "Comparer");
@@ -1392,12 +1443,155 @@ frame.addEventListener("load", async () => {
   setStatus("Prêt");
 });
 
+// Bibliothèque : tous les projets de l'utilisateur, ouverts sans passer par l'explorateur de fichiers.
+let lib = null, libEditing = false, libError = "";
+async function loadLibrary() {
+  lib = await (await fetch("/api/library")).json();
+  return lib;
+}
+async function openLibrary() {
+  libEditing = false; libError = "";
+  await save();
+  await loadLibrary();
+  renderLibrary();
+  $("library").classList.add("open");
+}
+function closeLibrary() { $("library").classList.remove("open"); }
+async function libraryCall(path, body) {
+  const res = await fetch(path, { method: "POST", body: body ? JSON.stringify(body) : undefined });
+  const data = await res.json();
+  if (!res.ok) { libError = data.error; renderLibrary(); return null; }
+  lib = data; libError = "";
+  return data;
+}
+function projectCard(p) {
+  const base = `/lib/${encodeURIComponent(p.id)}/${encodeURIComponent(p.cover.banner)}`;
+  const cover = h("span", { className: "cover" });
+  if (p.cover.file.endsWith(".png")) cover.append(h("img", { src: `${base}/${p.cover.file}?t=${p.updated}`, alt: "", loading: "lazy" }));
+  else {
+    const f = h("iframe", { src: `${base}/banner.html`, tabIndex: -1, title: p.name });
+    cover.append(f);
+    requestAnimationFrame(() => { f.style.transform = `scale(${cover.clientWidth / 1584})`; });
+  }
+  const isCurrent = lib.inLibrary && lib.current === `${lib.library}${lib.library.includes("\\") ? "\\" : "/"}${p.id}`;
+  const when = new Date(p.updated).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" });
+  const extra = p.occasions.length ? ` · ${p.occasions.map(occasionLabel).join(", ")}` : "";
+  return h("button", { className: `project${isCurrent ? " on" : ""}`, onclick: () => openProject(p.id) },
+    cover, h("b", { textContent: p.name }), h("small", { textContent: `${p.count} bannière${p.count > 1 ? "s" : ""} · ${when}${extra}` }));
+}
+async function openProject(id) {
+  if (await libraryCall(`/api/library/open?p=${encodeURIComponent(id)}`)) location.href = "/";
+}
+function renderLibrary() {
+  const close = h("button", { className: "icon", innerHTML: icon("close"), onclick: closeLibrary });
+  close.setAttribute("aria-label", "Fermer");
+  const imageBtn = btn("plus", "Importer une image", () => { closeLibrary(); pickFile(importBanner); }, "small");
+  imageBtn.dataset.tip = "Ajouter une image au projet ouvert, pour la comparer";
+  const head = h("header", {}, h("h2", { textContent: "Mes bannières" }), imageBtn, close);
+
+  let path;
+  if (libEditing) {
+    const input = h("input", { type: "text", value: lib.library, spellcheck: false });
+    input.setAttribute("aria-label", "Dossier de la bibliothèque");
+    const submit = async () => { if (await libraryCall("/api/library/set", { path: input.value })) { libEditing = false; renderLibrary(); } };
+    input.onkeydown = (e) => { if (e.key === "Enter") submit(); };
+    path = h("div", { className: "path" }, h("span", { textContent: "Dossier" }), h("label", { className: "f text" }, input),
+      btn("folder", "Enregistrer", submit, "small"), btn("close", "Annuler", () => { libEditing = false; libError = ""; renderLibrary(); }, "small"));
+    requestAnimationFrame(() => { input.focus(); input.select(); });
+  } else {
+    path = h("div", { className: "path" }, h("span", { textContent: lib.isDefault ? "Dossier (par défaut)" : "Dossier" }), h("code", { textContent: lib.library, title: lib.library }),
+      btn("folder", "Changer", () => { libEditing = true; renderLibrary(); }, "small"));
+  }
+
+  const parts = [head, path];
+  if (libError) parts.push(h("p", { className: "err", textContent: libError }));
+  if (!lib.inLibrary) {
+    parts.push(h("div", { className: "note" },
+      h("p", { textContent: "Le projet ouvert n'est pas encore dans ta bibliothèque. Ajoute-le pour le retrouver ici la prochaine fois." }),
+      btn("plus", "L'ajouter", async () => { if (await libraryCall("/api/library/add")) location.href = "/"; }, "small")));
+  }
+  if (lib.projects.length) parts.push(h("div", { className: "projects" }, ...lib.projects.map(projectCard)));
+  else parts.push(h("p", { className: "emptylib", textContent: "Ta bibliothèque est vide. Demande à Claude de créer ta bannière : il l'enregistrera ici." }));
+
+  $("library").replaceChildren(h("div", { className: "lib" }, ...parts));
+  $("library").onclick = (e) => { if (e.target === $("library")) closeLibrary(); };
+}
+
+// Fête ou thème : prépare le prompt à coller dans Claude, pour la bannière ouverte.
+const LEVELS = [
+  ["touche", "Clin d'œil", "clin d'œil : un ou deux motifs discrets, texte et couleurs inchangés"],
+  ["habillage", "Habillage", "habillage : fond et motifs de fête, palette teintée vers la fête"],
+  ["edition", "Édition spéciale", "édition spéciale : ambiance de fête complète"],
+  ["toutes", "Les trois", "les trois intensités, pour les comparer"],
+];
+const festive = { occasion: "noel", custom: "", level: "edition", message: "", offer: "" };
+function festivePrompt() {
+  const b = banners.find((x) => x.id === current) || {};
+  const name = festive.occasion === "autre" ? (festive.custom.trim() || "[nom de la fête ou du thème]") : occasionLabel(festive.occasion);
+  const level = LEVELS.find(([id]) => id === festive.level)[2];
+  const project = lib ? lib.current : "";
+  return [
+    `Avec le skill banner-festive, crée la version ${name} de ma bannière.`,
+    "",
+    `- Bannière de départ : ${b.dir || b.name}`,
+    `- Fête ou thème : ${name}`,
+    `- Intensité : ${level}`,
+    `- Message de fête : ${festive.message.trim() || "aucun, seulement l'ambiance"}`,
+    `- Offre : ${festive.offer.trim() || "aucune"}`,
+    "- Langues : français et anglais",
+    `- Enregistrement : dans le même projet${project ? `, ${project}` : ""}`,
+    "",
+    "Garde ma tagline, mes couleurs et mon call to action. Exporte les PNG, vérifie-les, puis ouvre l'éditeur sur ce projet.",
+  ].join("\n");
+}
+async function copyText(text) {
+  try { await navigator.clipboard.writeText(text); return true; } catch {
+    const area = h("textarea", { value: text });
+    document.body.append(area);
+    area.select();
+    const ok = document.execCommand("copy");
+    area.remove();
+    return ok;
+  }
+}
+function festiveSection() {
+  const box = sec(null);
+  const draw = () => {
+    const chips = h("div", { className: "seg wrap" });
+    [...Object.keys(OCCASIONS), "autre"].forEach((id) => {
+      chips.append(h("button", { className: festive.occasion === id ? "on" : "", textContent: id === "autre" ? "Autre…" : occasionLabel(id), onclick: () => { festive.occasion = id; draw(); } }));
+    });
+    const levels = h("div", { className: "seg wrap" });
+    LEVELS.forEach(([id, text]) => levels.append(h("button", { className: festive.level === id ? "on" : "", textContent: text, onclick: () => { festive.level = id; draw(); } })));
+    const preview = h("textarea", { className: "txt prompt", readOnly: true, value: festivePrompt() });
+    preview.setAttribute("aria-label", "Prompt à copier");
+    const field = (label, key, placeholder) => {
+      const input = h("input", { type: "text", value: festive[key], placeholder });
+      input.setAttribute("aria-label", label);
+      input.oninput = () => { festive[key] = input.value; preview.value = festivePrompt(); };
+      return h("label", { className: "f text" }, h("span", { textContent: label }), input);
+    };
+    const kids = [chips];
+    if (festive.occasion === "autre") kids.push(field("Thème", "custom", "Ex. Coupe du monde"));
+    kids.push(lab("Intensité"), levels, field("Message", "message", "Facultatif"), field("Offre", "offer", "Facultatif, avec ses conditions"), preview,
+      btn("sparkle", "Copier le prompt", async () => {
+        const ok = await copyText(festivePrompt());
+        if (!ok) { preview.focus(); preview.select(); }
+        setStatus(ok ? "Prompt copié : colle-le dans Claude" : "Texte sélectionné : copie-le avec Ctrl+C");
+      }));
+    box.replaceChildren(h("h4", { textContent: "Adapter à une fête ou un thème" }), ...kids);
+  };
+  draw();
+  return box;
+}
+
 (async function start() {
   buildRail();
   buildCommentBar();
   const data = await (await fetch("/api/banners")).json();
   banners = data.banners;
   photo = data.photo;
+  loadLibrary().then(() => { if (doc && !selected && group.length < 2) renderProps(); });
   const asked = new URLSearchParams(location.search).get("b");
   current = banners.some((b) => b.id === asked) ? asked : (banners.find((b) => b.id !== "_root") || banners[0]).id;
   renderStrip();

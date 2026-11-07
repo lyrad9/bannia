@@ -1,11 +1,12 @@
 #!/usr/bin/env node
-// Serveur local du mini-éditeur. Usage : node server.mjs <dossier> [--port 4180]
-// Le dossier contient banner.html, ou des sous-dossiers qui en contiennent chacun un. Aucune dépendance.
+// Serveur local du mini-éditeur. Usage : node server.mjs [projet] [--port 4180]
+// Un projet contient banner.html, ou des sous-dossiers qui en contiennent chacun un. Sans projet indiqué,
+// l'éditeur ouvre le dernier projet modifié de la bibliothèque. Aucune dépendance.
 import { createServer } from "node:http";
-import { readFile, writeFile, copyFile, mkdir, access, rm, readdir, cp, rename } from "node:fs/promises";
+import { readFile, writeFile, copyFile, mkdir, access, rm, readdir, cp, rename, stat } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { execFile } from "node:child_process";
-import { tmpdir } from "node:os";
+import { tmpdir, homedir } from "node:os";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
@@ -14,12 +15,62 @@ const args = process.argv.slice(2);
 const portFlag = args.indexOf("--port");
 const PORT = Number(process.env.PORT || (portFlag >= 0 ? args[portFlag + 1] : 4180));
 const dirArg = args.find((a, i) => !a.startsWith("--") && (portFlag < 0 || i !== portFlag + 1));
-if (!dirArg) {
-  console.error("Usage : node server.mjs <dossier> [--port 4180]");
-  process.exit(1);
-}
-const DIR = path.resolve(dirArg);
 const ROOT_ID = "_root";
+
+// La bibliothèque regroupe tous les projets de l'utilisateur, un sous-dossier par projet.
+// Son chemin est enregistré dans ~/.bannia/config.json ; par défaut, ~/Bannia.
+const CONFIG = path.join(homedir(), ".bannia", "config.json");
+const DEFAULT_LIBRARY = path.join(homedir(), "Bannia");
+
+async function readConfig() {
+  try { return JSON.parse(await readFile(CONFIG, "utf8")); } catch { return {}; }
+}
+async function writeConfig(patch) {
+  const next = { ...(await readConfig()), ...patch };
+  await mkdir(path.dirname(CONFIG), { recursive: true });
+  await writeFile(CONFIG, JSON.stringify(next, null, 2));
+  return next;
+}
+let LIBRARY = path.resolve((await readConfig()).library || DEFAULT_LIBRARY);
+
+const isInside = (child, parent) => child === parent || child.startsWith(parent + path.sep);
+const SKIP_DIR = (name) => name.startsWith("_") || name.startsWith(".") || name === "logos";
+
+// Les projets de la bibliothèque, du plus récent au plus ancien.
+async function listProjects() {
+  if (!existsSync(LIBRARY)) return [];
+  const out = [];
+  for (const entry of await readdir(LIBRARY, { withFileTypes: true })) {
+    if (!entry.isDirectory() || SKIP_DIR(entry.name)) continue;
+    const dir = path.join(LIBRARY, entry.name);
+    const banners = await scanBanners(dir);
+    if (!banners.length) continue;
+    let updated = 0;
+    for (const b of banners) {
+      const t = (await stat(path.join(b.dir, "banner.html"))).mtimeMs;
+      if (t > updated) updated = t;
+    }
+    // L'aperçu montre la bannière de base : sans fête, en français, au format LinkedIn si possible.
+    const rank = (b) => (b.occasion ? 4 : 0) + (b.lang === "fr" ? 0 : 2) + (b.format === "linkedin" ? 0 : 1);
+    const first = [...banners].sort((a, b) => rank(a) - rank(b))[0];
+    const png = (await readdir(first.dir)).find((f) => /^banner-\d+x\d+\.png$/.test(f));
+    const cover = { banner: first.id, file: png || "banner.html" };
+    out.push({ id: entry.name, name: entry.name, count: banners.length, updated, cover, occasions: [...new Set(banners.map((b) => b.occasion).filter(Boolean))] });
+  }
+  return out.sort((a, b) => b.updated - a.updated);
+}
+
+let DIR;
+if (dirArg) DIR = path.resolve(dirArg);
+else {
+  const [last] = await listProjects();
+  if (!last) {
+    console.error(`Ta bibliothèque (${LIBRARY}) ne contient encore aucune bannière.`);
+    console.error("Demande à Claude de créer ta bannière, ou indique un dossier : node server.mjs <dossier>");
+    process.exit(1);
+  }
+  DIR = path.join(LIBRARY, last.id);
+}
 
 const MIME = {
   ".html": "text/html; charset=utf-8", ".css": "text/css", ".js": "text/javascript", ".mjs": "text/javascript",
@@ -37,27 +88,53 @@ function dirOf(id) {
   return path.join(DIR, name);
 }
 
-async function listBanners() {
+// Les bannières d'un projet, sans rien écrire sur le disque.
+async function scanBanners(root) {
   const out = [];
-  if (existsSync(path.join(DIR, "banner.html"))) out.push({ id: ROOT_ID, name: path.basename(DIR) });
-  for (const entry of await readdir(DIR, { withFileTypes: true })) {
-    if (!entry.isDirectory() || entry.name.startsWith("_") || entry.name.startsWith(".") || entry.name === "logos") continue;
-    if (existsSync(path.join(DIR, entry.name, "banner.html"))) out.push({ id: entry.name, name: entry.name });
+  if (existsSync(path.join(root, "banner.html"))) out.push({ id: ROOT_ID, name: path.basename(root) });
+  for (const entry of await readdir(root, { withFileTypes: true })) {
+    if (!entry.isDirectory() || SKIP_DIR(entry.name)) continue;
+    if (existsSync(path.join(root, entry.name, "banner.html"))) out.push({ id: entry.name, name: entry.name });
   }
   for (const b of out) {
-    const dir = dirOf(b.id);
-    if (!existsSync(path.join(dir, "banner.original.html"))) await copyFile(path.join(dir, "banner.html"), path.join(dir, "banner.original.html"));
-    Object.assign(b, await readMeta(dir));
+    const dir = b.id === ROOT_ID ? root : path.join(root, b.id);
+    Object.assign(b, await readMeta(dir), { dir });
   }
   return out;
 }
 
-// Format, langue et taille sont déclarés dans le <head> de banner.html.
+async function listBanners() {
+  const out = await scanBanners(DIR);
+  for (const b of out) {
+    if (!existsSync(path.join(b.dir, "banner.original.html"))) await copyFile(path.join(b.dir, "banner.html"), path.join(b.dir, "banner.original.html"));
+  }
+  return out;
+}
+
+function projectDir(id) {
+  const name = cleanName(id);
+  if (name !== id || SKIP_DIR(name)) throw new Error("Projet inconnu");
+  const dir = path.join(LIBRARY, name);
+  if (!existsSync(dir)) throw new Error("Projet introuvable");
+  return dir;
+}
+
+function uniqueProject(base) {
+  let id = cleanName(base), n = 2;
+  while (existsSync(path.join(LIBRARY, id))) id = `${cleanName(base)}-${n++}`;
+  return id;
+}
+
+async function libraryState() {
+  return { library: LIBRARY, isDefault: LIBRARY === DEFAULT_LIBRARY, current: DIR, inLibrary: path.dirname(DIR) === LIBRARY, projects: await listProjects() };
+}
+
+// Format, langue, taille et fête éventuelle sont déclarés dans le <head> de banner.html.
 async function readMeta(dir) {
   const html = await readFile(path.join(dir, "banner.html"), "utf8");
   const meta = (name) => (html.match(new RegExp(`<meta name="banner-${name}" content="([^"]*)"`)) || [])[1];
   const [w, h] = (meta("size") || "1584x396").split("x").map(Number);
-  return { w: w || 1584, h: h || 396, format: meta("format") || "linkedin", lang: meta("lang") || "fr" };
+  return { w: w || 1584, h: h || 396, format: meta("format") || "linkedin", lang: meta("lang") || "fr", occasion: meta("occasion") || "" };
 }
 
 async function photoFile() {
@@ -222,6 +299,37 @@ const server = createServer(async (req, res) => {
       return send(res, 200, { id: next });
     }
 
+    // Bibliothèque : lister, ouvrir un projet, changer de dossier, y ajouter le projet ouvert.
+    if (req.method === "GET" && route === "/api/library") return send(res, 200, await libraryState());
+    const libMatch = route.match(/^\/lib\/([^/]+)\/([^/]+)\/(.+)$/);
+    if (req.method === "GET" && libMatch) {
+      const root = projectDir(libMatch[1]);
+      const sub = libMatch[2] === ROOT_ID ? root : path.join(root, cleanName(libMatch[2]));
+      return serveFile(res, sub, libMatch[3]);
+    }
+    if (req.method === "POST" && route === "/api/library/open") {
+      DIR = projectDir(url.searchParams.get("p") || "");
+      return send(res, 200, await libraryState());
+    }
+    if (req.method === "POST" && route === "/api/library/set") {
+      const { path: wanted } = JSON.parse((await readBody(req, 64 * 1024)).toString("utf8") || "{}");
+      if (!wanted || !path.isAbsolute(wanted.trim())) return send(res, 400, { error: "Indique un chemin complet, par exemple C:\\Users\\toi\\Bannia ou /Users/toi/Bannia" });
+      const next = path.resolve(wanted.trim());
+      if (isInside(DIR, next) && DIR !== next && path.dirname(DIR) !== next) return send(res, 400, { error: "Choisis un dossier qui ne se trouve pas dans un projet" });
+      await mkdir(next, { recursive: true });
+      await writeConfig({ library: next });
+      LIBRARY = next;
+      return send(res, 200, await libraryState());
+    }
+    if (req.method === "POST" && route === "/api/library/add") {
+      if (path.dirname(DIR) === LIBRARY) return send(res, 400, { error: "Ce projet est déjà dans ta bibliothèque" });
+      await mkdir(LIBRARY, { recursive: true });
+      const target = path.join(LIBRARY, uniqueProject(path.basename(DIR)));
+      await cp(DIR, target, { recursive: true, filter: (src) => !src.split(path.sep).includes(".corbeille") });
+      DIR = target;
+      return send(res, 200, await libraryState());
+    }
+
     const dir = dirOf(id);
     const comments = path.join(dir, "retours.json");
     if (req.method === "GET" && route === "/api/comments") {
@@ -274,5 +382,6 @@ if (!(await listBanners()).length) {
 
 server.listen(PORT, "127.0.0.1", () => {
   console.log(`Éditeur de bannière : http://127.0.0.1:${PORT}`);
-  console.log(`Dossier : ${DIR}`);
+  console.log(`Projet : ${DIR}`);
+  console.log(`Bibliothèque : ${LIBRARY}`);
 });
